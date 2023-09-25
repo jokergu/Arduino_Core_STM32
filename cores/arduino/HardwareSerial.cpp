@@ -485,12 +485,16 @@ size_t HardwareSerial::write(uint8_t c)
     // nop, the interrupt handler will free up space for us
   }
 
+  __disable_irq();
+
   _serial.tx_buff[_serial.tx_head] = c;
   _serial.tx_head = i;
 
   if (!serial_tx_active(&_serial)) {
     uart_attach_tx_callback(&_serial, _tx_complete_irq);
   }
+
+  __enable_irq();
 
   return 1;
 }
